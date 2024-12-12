@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statystyki wydatków</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'costs/styles.css' %}">
+    <style>
+        body {
+            flex-direction: column;
+        }
+        .container {
+            overflow-y: auto;
+            height: 80vh;
+        }
+        h2 {
+            font-size: 22px;
+        }
+        .nav-tabs {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="{% url 'group_list' %}" class="btn home-btn">
+            <i class="fas fa-home"></i> Strona główna
+        </a>
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn logout-btn">Wyloguj</button>
+        </form>
+    </nav>
+
+    <div class="container">
+        <h1>Statystyki wydatków</h1>
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link" id="costs-tab" href="{% url 'costs_list' group_id %}">Koszty</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="tasks-tab" href="{% url 'task_list' group_id %}">Zadania</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="balance-tab" href="{% url 'balance_view' group_id %}">Bilans</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" id="statistics-tab" data-toggle="tab" href="#statistics" role="tab" aria-controls="tasks" aria-selected="true">Statystyki</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="settlement-tab" href="{% url 'settlement_view' group_id %}">Rozliczenie</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="info-tab" href="{% url 'group_detail' group_id %}">Informacje</a>
+            </li>
+        </ul>
+
+        <form method="get" class="filter-form">
+            <label for="year">Wybierz rok:</label>
+            <select name="year" id="year">
+                {% for year in years %}
+                    <option value="{{ year }}" {% if year == selected_year|default:None %}selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="month">Wybierz miesiąc:</label>
+            <select name="month" id="month">
+                <option value="">Wszystkie</option>
+                {% for month_number, month_name in months %}
+                    <option value="{{ month_number }}" {% if month_number == selected_month|default:None %}selected{% endif %}>{{ month_name }}</option>
+                {% endfor %}
+            </select>
+
+            <button type="submit">Filtruj</button>
+        </form>
+
+        <div class="text-center">
+            {% if no_data %}
+                <div class="no-data-message">Brak danych dla wybranego miesiąca i roku.</div>
+            {% else %}
+                <div class="row">
+                    <div class="col-md-12 chart">
+                        <h2>Wydatki według użytkownika i kategorii</h2>
+                        <img src="data:image/png;base64,{{ img_str_1 }}" alt="Wydatki według użytkownika i kategorii" class="img-fluid" />
+                    </div>
+                </div>
+            
+                <div class="row d-flex align-items-stretch">
+                    <div class="col-md-6 chart d-flex flex-column">
+                        <h2>Całkowite wydatki według użytkownika</h2>
+                        <div class="flex-grow-1 d-flex justify-content-center align-items-center">
+                            <img src="data:image/png;base64,{{ img_str_2 }}" alt="Całkowite wydatki według użytkownika" class="img-fluid" />
+                        </div>
+                    </div>
+                    <div class="col-md-6 chart d-flex flex-column">
+                        <h2>Procentowy udział wydatków według użytkownika</h2>
+                        <div class="flex-grow-1 d-flex justify-content-center align-items-center">
+                            <img src="data:image/png;base64,{{ img_str_6 }}" alt="Procentowy udział wydatków według użytkownika" class="img-fluid" />
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="row d-flex align-items-stretch">
+                    <div class="col-md-6 chart d-flex flex-column">
+                        <h2>Całkowite wydatki według kategorii</h2>
+                        <div class="flex-grow-1 d-flex justify-content-center align-items-center">
+                            <img src="data:image/png;base64,{{ img_str_3 }}" alt="Całkowite wydatki według kategorii" class="img-fluid" />
+                        </div>
+                    </div>
+                    <div class="col-md-6 chart d-flex flex-column">
+                        <h2>Procentowy udział wydatków według kategorii</h2>
+                        <div class="flex-grow-1 d-flex justify-content-center align-items-center">
+                            <img src="data:image/png;base64,{{ img_str_5 }}" alt="Procentowy udział wydatków według kategorii" class="img-fluid" />
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="row">
+                    <div class="col-md-12 chart">
+                        <h2>Trend wydatków w czasie</h2>
+                        <img src="data:image/png;base64,{{ img_str_4 }}" alt="Trend wydatków w czasie" class="img-fluid" />
+                    </div>
+                </div>
+            {% endif %}
+            
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grupa została utworzona</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'costs/styles.css' %}">
+    <style>
+        body {
+            flex-direction: column;
+        }
+        .container {
+            max-width: 400px;
+            margin-top: 80px; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Grupa utworzona pomyślnie!</h2>
+        <p>Twoja grupa została utworzona.</p>
+        
+        <div class="info-box">
+            <p><strong>Nazwa grupy:</strong> {{ group.name }}</p>
+            <p><strong>Kod grupy:</strong> {{ group.code }}</p>
+        </div>
+        <br>    
+        <a href="{% url 'group_list' %}" class="link">Przejdź do Grup</a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

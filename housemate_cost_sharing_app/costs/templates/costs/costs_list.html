@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista kosztów</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'costs/styles.css' %}">
+    <style>
+        body {
+            flex-direction: column;
+        }
+        .container {
+            padding: 70px;
+            text-align: unset;
+        }
+        .cost_name, .cost_date {
+            justify-content: left;
+        }
+        .col-auto {
+            height: 75px;
+        }
+        .alert {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="{% url 'group_list' %}" class="btn home-btn">
+            <i class="fas fa-home"></i> Strona główna
+        </a>
+        
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn logout-btn">Wyloguj</button>
+        </form>
+    </nav>
+
+    <div class="container">
+        <h1>Lista kosztów</h1>
+
+        {% if messages %}
+            <div class="alert alert-danger">
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" href="{% url 'costs_list' group_id %}">Koszty</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'task_list' group_id %}">Zadania</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'balance_view' group_id %}">Bilans</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'statistics' group_id %}">Statystyki</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'settlement_view' group_id %}">Rozliczenie</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'group_detail' group_id %}">Informacje</a>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="costs" role="tabpanel" aria-labelledby="costs-tab">
+                <form method="GET" class="form-group">
+                    <div class="form-row align-items-end">
+                        <div class="col">
+                            <label for="start_date">Data początkowa:</label>
+                            <input type="date" class="form-control" name="start_date" id="start_date">
+                        </div>
+                        <div class="col">
+                            <label for="end_date">Data końcowa:</label>
+                            <input type="date" class="form-control" name="end_date" id="end_date">
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-submit" style="height: 38px;">Zastosuj</button>
+                        </div>
+                    </div>
+                </form>
+
+                <a href="{% url 'add_cost' group_id %}" class="link" style="margin-bottom: 20px; display: block; text-align: center;">Dodaj nowy koszt</a>
+
+                {% if costs %}
+                    <ul class="cost-list">
+                        {% for cost in costs %}
+                        <li class="cost-item">
+                            <span class="icon"><i class="fas fa-{{ cost.get_icon }}"></i></span>
+                            <a href="{% url 'cost_detail' cost.group.id cost.id %}" class="link">
+                                <div style="flex-grow: 1;">
+                                    <span class="cost-name">{{ cost.name }}</span>
+                                    <div class="cost-date">{{ cost.date|date:"Y-m-d" }}</div>
+                                </div>
+                            </a>
+                            <div class="cost-amount">
+                                <span>{{ cost.amount }} PLN</span>
+                            </div>
+                            <div class="edit-delete-icons">
+                                <a href="{% url 'edit_cost' cost.group.id cost.id %}" class="link">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'delete_cost' cost.group.id cost.id %}" class="link">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="no-data-message">Brak kosztów do wyświetlenia.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

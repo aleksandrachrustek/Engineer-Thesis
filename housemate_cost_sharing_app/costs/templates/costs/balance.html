@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bilans dla grupy</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'costs/styles.css' %}">
+    <style>
+        .container {
+            margin-top: 80px;
+        }
+        .table {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .table th {
+            background-color: #f8ec7b;
+            color: #091601;
+        }
+        .table td {
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="{% url 'group_list' %}" class="btn home-btn">
+            <i class="fas fa-home"></i> Strona główna
+        </a>
+        
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn logout-btn">Wyloguj</button>
+        </form>
+    </nav>
+
+    <div class="container">
+        <h1>Bilans dla grupy</h1>
+
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link" id="costs-tab" href="{% url 'costs_list' group_id %}">Koszty</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="tasks-tab" href="{% url 'task_list' group_id %}">Zadania</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" id="balance-tab" data-toggle="tab" href="#balance" role="tab" aria-controls="balance" aria-selected="true">Bilans</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="statistics-tab" href="{% url 'statistics' group_id %}">Statystyki</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="settlement-tab" href="{% url 'settlement_view' group_id %}">Rozliczenie</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="info-tab" href="{% url 'group_detail' group_id %}">Informacje</a>
+            </li>
+        </ul>
+        <br>
+
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="balance" role="tabpanel" aria-labelledby="balance-tab">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Użytkownik</th>
+                            <th>Zapłacone</th>
+                            <th>Do zapłaty</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user_id, data in balance_data.items %}
+                        <tr>
+                            <td>{{ data.user.username }}</td>
+                            <td>{{ data.total_paid|floatformat:2 }} zł</td>
+                            <td>{{ data.total_owed|floatformat:2 }} zł</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3">Brak danych do wyświetlenia.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <h4 class="text-center">Należności:</h4>
+                <ul class="list-group text-center">
+                    {% for settlement in settlements %}
+                        <li class="list-group-item">
+                            Użytkownik {{ settlement.debtor.username }} powinien zapłacić <strong>{{ settlement.amount|floatformat:2 }} zł</strong> użytkownikowi {{ settlement.creditor.username }}.
+                        </li>
+                    {% endfor %}
+                    {% if not settlements %}
+                        <li class="list-group-item">Wszystkie należności są uregulowane!</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Group</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'costs/styles.css' %}">
+    <style>
+        body {
+            flex-direction: column;
+        }
+        .container {
+            max-width: 600px;
+            margin-top: 80px;
+        }
+        .btn-submit {
+            padding: 15px 20px;
+            font-size: 20px;
+            width: 100%;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="{% url 'group_list' %}" class="btn home-btn">
+            <i class="fas fa-home"></i> Strona główna
+        </a>
+        
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn logout-btn">Wyloguj</button>
+        </form>
+    </nav>
+
+    <div class="container">
+        <h1>Edytuj grupę</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="name">Nazwa grupy:</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ group.name }}" required>
+            </div>
+            <button type="submit" class="btn btn-submit">Zapisz</button>
+        </form>
+        <a href="{% url 'group_detail' group.id %}" class="btn btn-secondary">Odrzuć</a>
+    </div>
+</body>
+</html>

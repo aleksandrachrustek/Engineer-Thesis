@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuń grupę</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'costs/styles.css' %}">
+    <style>
+        body {
+            flex-direction: column;
+        }
+        .container {
+            max-width: 600px;
+            margin-top: 80px;
+        }
+        .btn-submit {
+            padding: 15px 20px;
+            font-size: 20px;
+            width: 100%;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Usuń grupę</h1>
+        <p>Czy jesteś pewien, że chcesz usunąć grupę "{{ group.name }}"?</p>
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-submit">Tak, usuń</button>
+        </form>
+        <a href="{% url 'group_detail' group.id %}" class="btn btn-submit">Nie</a>
+    </div>
+</body>
+</html>

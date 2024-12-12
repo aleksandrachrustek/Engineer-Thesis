@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twoje grupy</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'costs/styles.css' %}">
+    <style>
+        body {
+            flex-direction: column;
+        }
+        .container {
+            max-width: 400px;
+            margin-top: 80px;
+        }
+        .edit-delete-icons {
+            right: 10px;
+            top: 10px;
+        }
+        .navbar {
+            justify-content: right;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn logout-btn">Wyloguj</button>
+        </form>
+    </nav>
+
+    <div class="container">
+        <h1>Twoje grupy</h1>
+
+        <div class="group-box">
+            <ul class="group-list">
+                {% for group in groups %}
+                    <li class="group-item">
+                        <a class="group-link" href="{% url 'costs_list' group.id %}">
+                            <i class="fas fa-home" style="margin-right: 5px;"></i>
+                            {{ group.name }}
+                        </a>
+                        <div class="edit-delete-icons">
+                            <a class="action-link" href="{% url 'edit_group' group.id %}">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a class="action-link" href="{% url 'delete_group' group.id %}">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </div>
+                    </li>
+                {% empty %}
+                    <li>Nie jesteś członkiem żadnych grup.</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <br>
+        <a href="{% url 'create_group' %}" class="create-group">Utwórz nową grupę</a>
+        <a href="{% url 'join_group' %}" class="join-group">Dołącz do grupy</a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

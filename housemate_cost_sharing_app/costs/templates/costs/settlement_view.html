@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rozliczenie</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'costs/styles.css' %}">
+    <style>
+        .container {
+            padding: 70px;
+        }
+        .table-container {
+            background-color: #fff7f4; 
+            border-radius: 10px; 
+        }
+        h2 {
+            text-align: center;
+        }
+        h3 {
+            text-align: center;
+            font-size: 20px;
+        }
+        .table {
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .table th, .table td {
+            text-align: center;
+            padding: 15px; 
+        }
+        .table th {
+            background-color: #f1c4ff;
+            color: rgb(0, 0, 0);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="{% url 'group_list' %}" class="btn home-btn">
+            <i class="fas fa-home"></i> Strona główna
+        </a>
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn logout-btn">Wyloguj</button>
+        </form>
+    </nav>
+
+    <div class="container">        
+        <h1>Rozliczenie</h1>
+
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link" id="costs-tab" href="{% url 'costs_list' group_id %}">Koszty</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="tasks-tab" href="{% url 'task_list' group_id %}">Zadania</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="balance-tab" href="{% url 'balance_view' group_id %}">Bilans</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="statistics-tab" href="{% url 'statistics' group_id %}">Statystyki</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" id="settlement-tab" data-toggle="tab" href="#settlement_view" role="tab" aria-controls="settlement" aria-selected="true">Rozliczenie</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="info-tab" href="{% url 'group_detail' group_id %}">Informacje</a>
+            </li>
+        </ul>
+
+        <div class="table-container mt-4">
+            
+            <form method="GET" action="" class="filter-section">
+                <label for="user_id">Użytkownik:</label>
+                <select name="user_id" id="user_id">
+                    <option value="">Wszyscy</option>
+                    {% for user in users %}
+                        <option value="{{ user.id }}" {% if request.GET.user_id == user.id|stringformat:"s" %}selected{% endif %}>{{ user.username }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="year">Rok:</label>
+                <select name="year" id="year">
+                    {% for year in available_years %}
+                        <option value="{{ year.year }}" {% if request.GET.year == year.year|stringformat:"s" %}selected{% endif %}>{{ year.year }}</option>
+                    {% endfor %}
+                </select>
+            
+                <label for="month">Miesiąc:</label>
+                <select name="month" id="month">
+                    <option value="">Wszystkie</option>
+                    {% for month in available_months %}
+                        <option value="{{ month.0 }}" {% if request.GET.month == month.0|stringformat:"s" %}selected{% endif %}>{{ month.1 }}</option>
+                    {% endfor %}
+                </select>
+                
+                <button type="submit" class="btn btn-filter">Filtruj</button>
+            </form>
+            
+            <div class="table-container">
+                <h3>Łączna suma wydatków: {{ total_sum }} zł</h3>
+                {% if category_sums %}
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Kategoria</th>
+                                <th>Łączna kwota</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for category_sum in category_sums %}
+                                <tr>
+                                    <td>{{ category_sum.category }}</td>
+                                    <td>{{ category_sum.total }} zł</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="no-data-message">Brak danych do wyświetlenia dla wybranych filtrów.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

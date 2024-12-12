@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edytuj zadanie</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'costs/styles.css' %}">
+    <style>
+        .form-box {
+            background-color: #fff7f4;
+        }
+        .btn-submit {
+            padding: 15px 20px; 
+            font-size: 20px;
+            margin-top: 15px;
+            width: 100%; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Edytuj zadanie</h1>
+        
+        <div class="form-box">
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="form-row">
+                    <div class="col">
+                        <label for="title">Tytuł:</label>
+                        <input type="text" class="form-control" id="title" name="title" value="{{ form.title.value }}" required maxlength="255">
+                    </div>
+                    <div class="col">
+                        <label for="description">Opis:</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" style="height: 38px;">{{ form.description.value }}</textarea>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="col">
+                        <label for="due_date">Termin:</label>
+                        <input type="date" class="form-control" id="due_date" name="due_date" value="{{ form.due_date.value }}" required>
+                    </div>
+                    <div class="col">
+                        <label for="assigned_to">Przypisane do:</label>
+                        {{ form.assigned_to }}
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="col">
+                        <label for="priority">Priorytet:</label>
+                        {{ form.priority }}
+                    </div>
+                    <div class="col">
+                        <label for="progress">Postęp:</label>
+                        {{ form.progress }}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-submit">Zapisz</button>
+            </form>
+        </div>
+        
+        <a href="{% url 'task_list' group_id %}" class="back-link">Powrót do listy zadań</a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

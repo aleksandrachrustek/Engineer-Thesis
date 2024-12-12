@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista zadań</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'costs/styles.css' %}">
+    <style>
+        body {
+            flex-direction: column;
+        }
+        .container {
+            padding: 70px;
+            position: relative;
+        }
+        .detail-item {
+            background-color: #f8ea9d;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="{% url 'group_list' %}" class="btn home-btn">
+            <i class="fas fa-home"></i> Strona główna
+        </a>
+        
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn logout-btn">Wyloguj</button>
+        </form>
+    </nav>
+
+    <div class="container">
+        <h1>Lista zadań</h1>
+
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'costs_list' group_id %}">Koszty</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="{% url 'task_list' group_id %}">Zadania</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="balance-tab" href="{% url 'balance_view' group_id %}">Bilans</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="statistics-tab" href="{% url 'statistics' group_id %}">Statystyki</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="settlement-tab" href="#">Rozliczenie</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="info-tab" href="{% url 'group_detail' group_id %}">Informacje</a>
+            </li>
+        </ul>
+
+        <div class="details mt-4">
+            <div class="detail-item">
+                <p><strong>Nazwa zadania:</strong> {{ task.title }}</p>
+            </div>
+            <div class="detail-item">
+                <p><strong>Opis:</strong> {{ task.description }}</p>
+            </div>
+            <div class="detail-item">
+                <p><strong>Data wykonania:</strong> {{ task.due_date|date:"Y-m-d" }}</p>
+            </div>
+            <div class="detail-item">
+                <p><strong>Przydzielone do:</strong>
+                    {% for user in task.assigned_to.all %}
+                        {{ user.username }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+            </div>
+            <div class="detail-item">
+                <p><strong>Priorytet:</strong> {{ task.get_priority_display }}</p>
+            </div>
+            <div class="detail-item">
+                <p><strong>Postęp:</strong> {{ task.get_progress_display }}</p>
+            </div>
+        </div>
+
+        <a href="{% url 'task_list' group_id %}" class="btn btn-back">Powrót do listy zadań</a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

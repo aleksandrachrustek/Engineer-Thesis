@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dodaj koszt</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'costs/styles.css' %}">
+    <style>
+        .btn-submit {
+            padding: 15px 20px;
+            font-size: 20px; 
+            width: 100%;
+            margin-top: 15px; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dodaj nowy koszt</h1>
+        
+        <div class="form-box">
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="form-row">
+                    <div class="col">
+                        <label for="name">Nazwa:</label>
+                        <input type="text" class="form-control" id="name" name="name" required maxlength="255">
+                    </div>
+                    <div class="col">
+                        <label for="amount">Kwota:</label>
+                        <input type="number" class="form-control" id="amount" name="amount" step="0.01" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="col">
+                        <label for="description">Opis:</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" style="height: 38px;"></textarea>
+                    </div>
+                    <div class="col">
+                        <label for="date">Data:</label>
+                        <input type="date" class="form-control" id="date" name="date" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="col d-flex">
+                        <label for="paid_by" class="mr-2" style="margin-top: 8px;">Opłacone przez:</label>
+                        {{ form.paid_by }}
+                    </div>
+                    <div class="col d-flex">
+                        <label for="paid_for" class="mr-2" style="margin-top: 8px;">Zapłacone za:</label>
+                        {{ form.paid_for }}
+                    </div>
+                </div>
+                
+                
+                <div class="form-row">
+                    <div class="col">
+                        <label for="category">Kategoria:</label>
+                        {{ form.category }}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-submit">Dodaj</button>
+            </form>
+        </div>
+
+        <a href="{% url 'costs_list' group_id %}" class="back-link">Powrót do kosztów</a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

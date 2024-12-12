@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista zadań</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'costs/styles.css' %}">
+    <style>
+        .container {
+            padding: 70px;
+            text-align: unset;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="{% url 'group_list' %}" class="btn home-btn">
+            <i class="fas fa-home"></i> Strona główna
+        </a>
+        
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn logout-btn">Wyloguj</button>
+        </form>
+    </nav>
+
+    <div class="container">        
+        <h1>Lista zadań</h1>
+
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link" id="costs-tab" href="{% url 'costs_list' group_id %}">Koszty</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" id="tasks-tab" data-toggle="tab" href="#tasks" role="tab" aria-controls="tasks" aria-selected="true">Zadania</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="balance-tab" href="{% url 'balance_view' group_id %}">Bilans</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="statistics-tab" href="{% url 'statistics' group_id %}">Statystyki</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="settlement-tab" href="{% url 'settlement_view' group_id %}">Rozliczenie</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="info-tab" href="{% url 'group_detail' group_id %}">Informacje</a>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="tasks" role="tabpanel" aria-labelledby="tasks-tab">
+                
+                
+                <form method="GET" class="form-group mb-3">
+                    <div class="form-row align-items-center">
+                        <div class="col">
+                            <label for="assigned_user">Filtruj po użytkowniku:</label>
+                            <select class="form-control" name="assigned_user" id="assigned_user">
+                                <option value="">Wszyscy</option>
+                                {% for user in users %}
+                                    <option value="{{ user.id }}" {% if request.GET.assigned_user == user.id %}selected{% endif %}>{{ user.username }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="sort_order">Sortuj według:</label>
+                            <select class="form-control" name="sort_order" id="sort_order">
+                                <option value="due_date_asc" {% if sort_order == 'due_date_asc' %}selected{% endif %}>Od najbliższej daty</option>
+                                <option value="due_date_desc" {% if sort_order == 'due_date_desc' %}selected{% endif %}>Od najdalszej daty</option>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-submit" style="height: 38px;">Zastosuj</button>
+                        </div>
+                    </div>
+                </form>
+                
+                <a href="{% url 'add_task' group_id %}" class="link" style="margin-bottom: 20px; display: block; text-align: center;">Dodaj nowe zadanie</a>
+
+                {% if tasks %}
+                    <ul class="task-list">
+                        {% for task in tasks %}
+                            <li class="task-item {% if task.priority == 'high' %}priority-high{% elif task.priority == 'medium' %}priority-medium{% else %}priority-low{% endif %}">
+                                <div class="due-date">{{ task.due_date|date:"d.m.Y" }}</div>
+                                <div>
+                                    <a href="{% url 'task_detail' task.group_id task.id %}" class="task-title">{{ task.title }}</a>
+                                    <div class="assigned-to">Przydzielone do: 
+                                        {% for user in task.assigned_to.all %}
+                                            {{ user.username }}{% if not forloop.last %}, {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar 
+                                        {% if task.progress == 'not_started' %} progress-not-started width-0 
+                                        {% elif task.progress == 'in_progress' %} progress-in-progress width-50 
+                                        {% elif task.progress == 'completed' %} progress-completed width-100 
+                                        {% endif %}"
+                                        role="progressbar"
+                                        aria-valuenow="{% if task.progress == 'not_started' %} 0 
+                                            {% elif task.progress == 'in_progress' %} 50 
+                                            {% elif task.progress == 'completed' %} 100 
+                                            {% endif %}" 
+                                        aria-valuemin="0" aria-valuemax="100">
+                                            {% if task.progress == 'not_started' %} 0% 
+                                            {% elif task.progress == 'in_progress' %} 50% 
+                                            {% elif task.progress == 'completed' %} 100% 
+                                            {% endif %}
+                                    </div>
+                                </div>
+                                <div class="edit-delete-icons">
+                                    <a href="{% url 'edit_task' group_id task.id %}" class="link">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'delete_task' group_id task.id %}" class="link">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="no-data-message">Brak zadań do wyświetlenia.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
